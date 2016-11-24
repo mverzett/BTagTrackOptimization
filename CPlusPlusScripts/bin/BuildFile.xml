@@ -1,0 +1,5 @@
+<use name="root"/>
+<use name="rootmath"/>
+<use name="boost_program_options"/>
+<flags CXXFLAGS="-g"/>
+<bin file="make_track_tree.cc" name="make_track_tree"/>
