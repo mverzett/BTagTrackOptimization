@@ -7,9 +7,13 @@ from sklearn.metrics import roc_curve, auc
 @np.vectorize
 def flavours(history):
 	if (history & 1):
-		return 2
+		return 2 #btracks
 	elif (history & 2):
-		return 1
+		return 1 #ctracks
+	elif (history & 2**7):
+		return -1 #fakes
+	elif not (history & 2**9):
+		return -2 #PU
 	return 0
 
 @np.vectorize
@@ -67,3 +71,17 @@ def plot_roc(predictions, target, compute_auc=False, **kwargs):
 			kwargs['label'] += ' %.3f' % auc_v
 	plt.plot(fpr, tpr, **kwargs)
 	return fpr, tpr, auc_v
+
+def purity_vs_eff(predictions, target, **kwargs):
+	m, M = predictions.min(), predictions.max()
+	eff = []
+	pur = []
+	tot_sig = target.sum()
+	cuts = np.arange(m, M, (M-m)/200)
+	for cut in cuts:
+		mask = (predictions > cut)
+		nsig = target[mask].sum()
+		eff.append(float(nsig)/tot_sig)
+		pur.append(float(nsig)/mask.sum())
+	plt.plot(eff, pur, **kwargs)
+	return eff, pur, cuts
